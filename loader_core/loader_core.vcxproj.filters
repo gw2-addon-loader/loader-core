@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="instance">
+      <UniqueIdentifier>{fb0ae2e1-3b19-4bf4-a582-fda68ba666b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{10c29f0c-8c6e-404e-88df-dbf395cd16a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{9d7a758e-29d8-4996-896f-4be62240b256}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="loader_core.h">
+      <Filter>instance</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="gw2al_api_impl.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="gw2al_api.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="id_storage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>instance</Filter>
+    </ClCompile>
+    <ClCompile Include="loader_core.cpp">
+      <Filter>instance</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9_dll_impl.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="gw2al_api_impl.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="gw2al_api_func_registry.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="gw2al_api_addon_registry.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="id_storage.cpp" />
+    <ClCompile Include="gw2al_api_event.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="deffile" />
+  </ItemGroup>
+</Project>
