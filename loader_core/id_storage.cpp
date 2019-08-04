@@ -17,18 +17,15 @@ id_storage<idType, objType>::~id_storage()
 }
 
 template<class idType, class objType>
-gw2al_api_ret id_storage<idType, objType>::register_obj(objType obj, gw2al_hashed_name name)
+idType id_storage<idType, objType>::register_new_obj(objType obj, gw2al_hashed_name name)
 {
-	if (idMap.find(name) != idMap.end())
-		return GW2AL_IN_USE;
-
-	unsigned short id = maxId;
+	idType id = maxId;
 
 	if (freeIds.empty())
 	{
 		if (maxId == idsAllocated)
 		{
-			return GW2AL_STATIC_LIMIT_HIT;
+			return 0;
 		}
 		++maxId;
 	}
@@ -40,6 +37,18 @@ gw2al_api_ret id_storage<idType, objType>::register_obj(objType obj, gw2al_hashe
 	idMap[name] = id;
 	objArray[id] = obj;
 
+	return id;
+}
+
+template<class idType, class objType>
+gw2al_api_ret id_storage<idType, objType>::register_obj(objType obj, gw2al_hashed_name name)
+{
+	if (idMap.find(name) != idMap.end())
+		return GW2AL_IN_USE;
+
+	if (register_new_obj(obj, name) == 0)
+		return GW2AL_STATIC_LIMIT_HIT;
+	
 	return GW2AL_OK;
 }
 
@@ -51,7 +60,7 @@ void id_storage<idType, objType>::unregister_obj(gw2al_hashed_name name)
 	if (idItr == idMap.end())
 		return;
 
-	unsigned short id = idItr->second;
+	idType id = idItr->second;
 
 	objArray[id] = NULL;
 	freeIds.push(id);
@@ -69,6 +78,12 @@ objType id_storage<idType, objType>::query_obj(gw2al_hashed_name name)
 }
 
 template<class idType, class objType>
+objType id_storage<idType, objType>::get_obj(idType id)
+{
+	return objArray[id];
+}
+
+template<class idType, class objType>
 objType * id_storage<idType, objType>::get_array(idType * sz)
 {
 	*sz = maxId;
@@ -77,3 +92,4 @@ objType * id_storage<idType, objType>::get_array(idType * sz)
 
 template class id_storage<unsigned short, void*>;
 template class id_storage<unsigned short, gw2al_addon*>;
+template class id_storage<gw2al_event_id, gw2al_event_dsc*>;

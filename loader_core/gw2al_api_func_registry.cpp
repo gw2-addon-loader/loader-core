@@ -17,10 +17,12 @@ void gw2al_core__init_func_registry()
 	gw2al_core__register_function(gw2al_core__query_event, GW2AL_CORE_FUNN_QUERY_EVENT);
 	gw2al_core__register_function(gw2al_core__trigger_event, GW2AL_CORE_FUNN_TRIGGER_EVENT);
 	gw2al_core__register_function(gw2al_core__client_unload, GW2AL_CORE_FUNN_CLIENT_UNLOAD);	 
+	gw2al_core__register_function(gw2al_core__log_text, GW2AL_CORE_FUNN_LOG_TEXT);
 }
 
 gw2al_api_ret gw2al_core__register_function(void * function, gw2al_hashed_name name)
 {	
+	LOG_DEBUG(L"core", L"registered function %016llX = %016llX", name, function);
 	return funcStorage.register_obj(function, name);
 }
 

@@ -2,7 +2,7 @@
 
 //Direct3DCreate9
 extern "C" IDirect3D9* WINAPI Direct3DCreate9(UINT SDKVersion) {	
-	return instance.OnD3DCreate(SDKVersion);
+	return loader_core::instance.OnD3DCreate(SDKVersion);
 }
 
 extern "C" HRESULT WINAPI Direct3DCreate9Ex(

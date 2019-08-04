@@ -27,7 +27,9 @@ void gw2al_core__init_addon_registry()
 		GW2AL_CORE_FUNN_UNWATCH_EVENT,
 		GW2AL_CORE_FUNN_QUERY_EVENT,
 		GW2AL_CORE_FUNN_TRIGGER_EVENT,
-		GW2AL_CORE_FUNN_CLIENT_UNLOAD
+		GW2AL_CORE_FUNN_CLIENT_UNLOAD,
+		GW2AL_CORE_FUNN_LOG_TEXT,
+		0
 	};
 
 	gw2al_core__fill_vtable(api_nameList, (void**)&api_vtable);
@@ -35,9 +37,9 @@ void gw2al_core__init_addon_registry()
 	coreAddonDsc.dependList = 0;
 	coreAddonDsc.description = L"core addon loading library";
 	coreAddonDsc.name = L"loader_core";
-	coreAddonDsc.majorVer = 0;
-	coreAddonDsc.minorVer = 1;
-	coreAddonDsc.revision = 1;
+	coreAddonDsc.majorVer = LOADER_CORE_VER_MAJOR;
+	coreAddonDsc.minorVer = LOADER_CORE_VER_MINOR;
+	coreAddonDsc.revision = LOADER_CORE_VER_REV;
 
 	coreAddon.addonLib = 0;
 	coreAddon.desc = &coreAddonDsc;
@@ -52,6 +54,8 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 
 	if (!addon)
 		return GW2AL_NOT_FOUND;
+
+	LOG_DEBUG(L"core", L"Unloading addon %s", addon->desc->name);
 
 	unsigned short i;
 
@@ -87,7 +91,7 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 		--i;
 	}
 
-	gw2al_api_ret ret = addon->unload(instance.GetCurrentState() != LDR_INGAME);
+	gw2al_api_ret ret = addon->unload(loader_core::instance.GetCurrentState() != LDR_INGAME);
 
 	if (ret == GW2AL_OK)
 	{
@@ -103,6 +107,8 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 
 gw2al_api_ret gw2al_core__load_addon(wchar_t * name)
 {
+	LOG_DEBUG(L"core", L"Loading addon %s", name);
+
 	gw2al_hashed_name nameH = gw2al_core__hash_name(name);
 
 	if (gw2al_core__query_addon(nameH))

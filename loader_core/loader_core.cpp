@@ -1,12 +1,14 @@
 ﻿#include "stdafx.h"
 
+loader_core loader_core::instance;
+
 loader_core::loader_core()
 {
 	state = LDR_DLL_LOADED;	   
 }
 
 loader_core::~loader_core()
-{
+{	
 }
 
 loader_state loader_core::GetCurrentState()
@@ -22,6 +24,8 @@ void loader_core::LoadAddonsFromDir(const wchar_t * dir)
 	wchar_t sPath[2048];
 	wsprintf(sPath, L"%s\\*.*", dir);
 
+	LOG_INFO(L"core", L"Loading addons from \"./%s\" path", dir);
+
 	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE)
 	{
 		return;
@@ -34,12 +38,52 @@ void loader_core::LoadAddonsFromDir(const wchar_t * dir)
 		{
 			if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			{
-				gw2al_core__load_addon(fdFile.cFileName);
+				LOG_INFO(L"core", L"Loading %s", fdFile.cFileName);
+
+				gw2al_api_ret ret = gw2al_core__load_addon(fdFile.cFileName);
+
+				switch (ret)
+				{
+					case GW2AL_BAD_DLL:
+						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll missing one of export functions", dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+					case GW2AL_NOT_FOUND:
+						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll not found", dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+					case GW2AL_DEP_NOT_LOADED:
+						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll dependency missing", dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+					case GW2AL_DEP_OUTDATED:
+						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll dependency outdated", dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+					case GW2AL_OK:
+						LOG_INFO(L"core", L"%s/%s/gw2addon_%s.dll loaded", dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+					default:
+						LOG_ERROR(L"core", L"Error %u loading %s/%s/gw2addon_%s.dll", ret, dir, fdFile.cFileName, fdFile.cFileName);
+						break;
+				}
 			}
 		}
 	} while (FindNextFile(hFind, &fdFile));
 
 	FindClose(hFind);
+
+	LOG_INFO(L"core", L"Done loading addons", dir);
+}
+
+void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, const wchar_t * fmt, ...)
+{
+	static wchar_t buf[4096];
+
+	va_list arg;
+	va_start(arg, fmt);
+		
+	vswprintf(buf, 4096, fmt, arg);
+	
+	va_end(arg);
+
+	gw2al_core__log_text(level, (wchar_t*)source, buf);
 }
 
 IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
@@ -49,12 +93,18 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 
 	gw2al_core__init();
 
-	LoadAddonsFromDir(L"..\\addons");
+	LOG_INFO(L"core", L"Addon loader v%u.%u (%S) loaded", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME);
+
+	LoadAddonsFromDir(L"addons");
 
 	IDirect3D9* (*d3d9_create_hook)() = (IDirect3D9* (*)())gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
 
+	LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
+
+	IDirect3D9* ret = NULL;
+
 	if (d3d9_create_hook)
-		return d3d9_create_hook();
+		ret = d3d9_create_hook();
 	else {
 		wchar_t infoBuf[4096];
 		GetSystemDirectory(infoBuf, 4096);
@@ -67,35 +117,57 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 		Direct3DCreate9Func origDirect3DCreate9 = (Direct3DCreate9Func)GetProcAddress(sys_d3d9, "Direct3DCreate9");
 		IDirect3D9* res = origDirect3DCreate9(sdkVer);
 
-		return res;
+		ret = res;
 	}	
 
 	SwitchState(LDR_INGAME);
+
+	LOG_DEBUG(L"core", L"ID3D9 = 0x%016llX", ret);
+
+	return ret;
 }
 
 void loader_core::SignalUnload()
 {
 	if (SwitchState(LDR_UNLOAD))
 	{
-		gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)L"loader_core"));
+		LOG_INFO(L"core", L"Exiting, unloading core addon");
+
+		if (gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)L"loader_core")) == GW2AL_DEP_STILL_LOADED)
+		{
+			LOG_ERROR(L"core", L"Some addons are not unloaded!");
+		}
 		SwitchState(LDR_UNLOADED);
+
+		LOG_INFO(L"core", L"Unloaded");
 	}
 }
 
 BOOL loader_core::SwitchState(loader_state newState)
-{
+{	
+	int doSwitch = 0;
+
 	switch (state)
 	{
 		case LDR_DLL_LOADED:
-			return newState == LDR_ADDON_LOAD;			
+			doSwitch = newState == LDR_ADDON_LOAD;
+			break;
 		case LDR_ADDON_LOAD:
-			return newState == LDR_INGAME;
+			doSwitch = newState == LDR_INGAME;
+			break;
 		case LDR_INGAME:
-			return newState == LDR_UNLOAD;
+			doSwitch = newState == LDR_UNLOAD;
+			break;
 		case LDR_UNLOAD:
-			return newState == LDR_UNLOADED;
+			doSwitch = newState == LDR_UNLOADED;
+			break;
 		default:
-			return 0;
+			;
 	}
-	return 0;
+
+	LOG_DEBUG(L"core", L"state switch asked: %u -> %u = %u", state, newState, doSwitch ? newState : state);
+
+	state = doSwitch ? newState : state;
+
+	return doSwitch;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#define gw2al_hashed_name unsigned long
+#define gw2al_hashed_name unsigned long long
 #define gw2al_event_id unsigned long
 
 typedef struct gw2al_addon_dsc {
@@ -43,7 +43,15 @@ typedef void(*gw2al_api_event_handler)(void* data);
 #define GW2AL_CORE_FUNN_QUERY_EVENT 11
 #define GW2AL_CORE_FUNN_TRIGGER_EVENT 12
 #define GW2AL_CORE_FUNN_CLIENT_UNLOAD 13
-#define GW2AL_CORE_FUNN_D3DCREATE_HOOK 14
+#define GW2AL_CORE_FUNN_LOG_TEXT 14
+#define GW2AL_CORE_FUNN_D3DCREATE_HOOK 15
+
+typedef enum gw2al_log_level {
+	LL_INFO = 0,
+	LL_ERR,
+	LL_WARN,	
+	LL_DEBUG
+} gw2al_log_level;
 
 typedef struct gw2al_core_vtable {
 	//converts string to hash for usage in other functions
@@ -70,14 +78,18 @@ typedef struct gw2al_core_vtable {
 	//watch event can add a number of handlers on event name with priority 
 	//query event will get internal event id to speedup trigger_event calls
 
-	gw2al_api_ret (*watch_event)(gw2al_hashed_name name, gw2al_hashed_name subscriber, gw2al_api_event_handler handler, unsigned int priority);
-	void (*unwatch_event)(gw2al_hashed_name name, gw2al_hashed_name subscriber);
+	gw2al_api_ret (*watch_event)(gw2al_event_id id, gw2al_hashed_name subscriber, gw2al_api_event_handler handler, unsigned int priority);
+	void (*unwatch_event)(gw2al_event_id id, gw2al_hashed_name subscriber);
 	gw2al_event_id (*query_event)(gw2al_hashed_name name);
 	unsigned int (*trigger_event)(gw2al_event_id id, void* data);
 
 	//unload function to delete properly unload things on client exit
 
 	void (*client_unload)();
+
+	//simple logging function
+
+	void (*log_text)(gw2al_log_level level, wchar_t* source, wchar_t* text);
 
 } gw2al_core_vtable;
 

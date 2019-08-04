@@ -10,10 +10,12 @@ public:
 	id_storage(idType totalIdsCount);
 	~id_storage();
 
+	idType register_new_obj(objType obj, gw2al_hashed_name name);
 	gw2al_api_ret register_obj(objType obj, gw2al_hashed_name name);
 	void unregister_obj(gw2al_hashed_name name);
 
 	objType query_obj(gw2al_hashed_name name);
+	objType get_obj(idType id);
 
 	objType* get_array(idType* sz);
 

@@ -20,10 +20,13 @@
     <ClInclude Include="gw2al_api_impl.h">
       <Filter>api</Filter>
     </ClInclude>
-    <ClInclude Include="gw2al_api.h">
+    <ClInclude Include="id_storage.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h" />
+    <ClInclude Include="..\include\gw2al_api.h">
       <Filter>api</Filter>
     </ClInclude>
-    <ClInclude Include="id_storage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -32,7 +35,6 @@
     <ClCompile Include="loader_core.cpp">
       <Filter>instance</Filter>
     </ClCompile>
-    <ClCompile Include="d3d9_dll_impl.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="gw2al_api_impl.cpp">
       <Filter>api</Filter>
@@ -43,9 +45,14 @@
     <ClCompile Include="gw2al_api_addon_registry.cpp">
       <Filter>api</Filter>
     </ClCompile>
-    <ClCompile Include="id_storage.cpp" />
     <ClCompile Include="gw2al_api_event.cpp">
       <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="id_storage.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9_dll_impl.cpp">
+      <Filter>instance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

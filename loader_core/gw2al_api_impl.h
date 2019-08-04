@@ -9,6 +9,19 @@ typedef struct gw2al_addon {
 	gw2al_addon_unload_proc unload;
 } gw2al_addon;
 
+typedef struct gw2al_event_subscriber {
+	gw2al_hashed_name subscriber;
+	unsigned int priority;
+	gw2al_api_event_handler handler;	
+} gw2al_event_subscriber;
+
+typedef struct gw2al_event_dsc {
+	gw2al_hashed_name name;
+	gw2al_event_id id;
+	unsigned int subCount;
+	gw2al_event_subscriber* subs;
+} gw2al_event_dsc;
+
 void gw2al_core__init();
 void gw2al_core__init_func_registry();
 void gw2al_core__init_addon_registry();
@@ -38,9 +51,11 @@ gw2al_addon_dsc* gw2al_core__query_addon(gw2al_hashed_name name);
 //watch event can add a number of handlers on event name with priority 
 //query event will get internal event id to speedup trigger_event calls
 
-gw2al_api_ret gw2al_core__watch_event(gw2al_hashed_name name, gw2al_hashed_name subscriber, gw2al_api_event_handler handler, unsigned int priority);
-void gw2al_core__unwatch_event(gw2al_hashed_name name, gw2al_hashed_name subscriber);
 gw2al_event_id gw2al_core__query_event(gw2al_hashed_name name);
+gw2al_api_ret gw2al_core__watch_event(gw2al_event_id id, gw2al_hashed_name subscriber, gw2al_api_event_handler handler, unsigned int priority);
+void gw2al_core__unwatch_event(gw2al_event_id id, gw2al_hashed_name subscriber);
 unsigned int gw2al_core__trigger_event(gw2al_event_id id, void* data);
 
 void gw2al_core__client_unload();
+
+void gw2al_core__log_text(gw2al_log_level level, wchar_t* source, wchar_t* text);
