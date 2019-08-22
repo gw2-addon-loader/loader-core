@@ -19,6 +19,7 @@ typedef struct gw2al_event_dsc {
 	gw2al_hashed_name name;
 	gw2al_event_id id;
 	unsigned int subCount;
+	unsigned int activeSubCount;
 	gw2al_event_subscriber* subs;
 } gw2al_event_dsc;
 

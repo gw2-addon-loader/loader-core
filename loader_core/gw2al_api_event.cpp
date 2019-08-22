@@ -32,19 +32,21 @@ gw2al_api_ret gw2al_core__watch_event(gw2al_event_id id, gw2al_hashed_name subsc
 		evDsc->subs = (gw2al_event_subscriber*)realloc(evDsc->subs, subArrSz);		
 	}
 
+	++evDsc->activeSubCount;
+
 	gw2al_event_subscriber* evSub = &evDsc->subs[subId];
 
 	evSub->handler = handler;
 	evSub->priority = priority;
 	evSub->subscriber = subscriber;
 
-	//sort priority
+	//re sort priority
 
 	for (int i = 0; i != subc; ++i)
 	{	
 		for (int j = i; j != subc; ++j)
 		{
-			if (evDsc->subs[i].priority < evDsc->subs[j].priority)
+			if ((evDsc->subs[i].priority < evDsc->subs[j].priority) || ((evDsc->subs[i].handler == NULL) && (evDsc->subs[j].handler != NULL)))
 			{
 				gw2al_event_subscriber swp = evDsc->subs[i];
 				evDsc->subs[i] = evDsc->subs[j];
@@ -80,6 +82,23 @@ void gw2al_core__unwatch_event(gw2al_event_id id, gw2al_hashed_name subscriber)
 			evDsc->subs[i].priority = 0;
 		}
 	}
+
+	++evDsc->activeSubCount;
+
+	//re sort priority
+
+	for (int i = 0; i != subc; ++i)
+	{
+		for (int j = i; j != subc; ++j)
+		{
+			if ((evDsc->subs[i].priority < evDsc->subs[j].priority) || ((evDsc->subs[i].handler == NULL) && (evDsc->subs[j].handler != NULL)))
+			{
+				gw2al_event_subscriber swp = evDsc->subs[i];
+				evDsc->subs[i] = evDsc->subs[j];
+				evDsc->subs[j] = swp;
+			}
+		}
+	}
 }
 
 gw2al_event_id gw2al_core__query_event(gw2al_hashed_name name)
@@ -98,6 +117,7 @@ gw2al_event_id gw2al_core__query_event(gw2al_hashed_name name)
 		memset(evDsc->subs, 0, subArrSz);
 
 		evDsc->id = eventStorage.register_new_obj(evDsc, name);
+		evDsc->activeSubCount = 0;
 
 		LOG_DEBUG(L"core", L"new event %016llX = %lu", name, evDsc->id);
 	}
@@ -109,10 +129,10 @@ unsigned int gw2al_core__trigger_event(gw2al_event_id id, void * data)
 {
 	gw2al_event_dsc* evDsc = eventStorage.get_obj(id);
 
-	unsigned int subc = evDsc->subCount;
+	unsigned int subc = evDsc->activeSubCount;
 
 	for (int i = 0; i != subc; ++i)
-	{
+	{		
 		evDsc->subs[i].handler(data);
 	}
 
