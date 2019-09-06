@@ -147,6 +147,7 @@ gw2al_api_ret gw2al_core__load_addon(wchar_t * name)
 			{
 				if (gw2al_core__load_addon((wchar_t*)laddon.desc->dependList[i].name) != GW2AL_OK)
 				{
+					LOG_WARNING(L"core", L"Addon \"%s\" is not loaded due to missing dependency \"%s\"", name, laddon.desc->dependList[i].name);
 					FreeLibrary(laddon.addonLib);
 					return GW2AL_DEP_NOT_LOADED;
 				}
@@ -156,6 +157,10 @@ gw2al_api_ret gw2al_core__load_addon(wchar_t * name)
 
 			if ((depDsc->majorVer < laddon.desc->dependList[i].majorVer) || (depDsc->minorVer < laddon.desc->dependList[i].minorVer))
 			{
+				LOG_WARNING(L"core", L"Addon \"%s\" is not loaded due to wrong dependency version \"%s\". Require v%u.%u(r%u) but have v%u.%u(r%u)", name, laddon.desc->dependList[i].name,
+					laddon.desc->dependList[i].majorVer, laddon.desc->dependList[i].minorVer, laddon.desc->dependList[i].revision,
+					depDsc->majorVer, depDsc->minorVer, depDsc->revision
+					);
 				FreeLibrary(laddon.addonLib);
 				return GW2AL_DEP_OUTDATED;
 			}
@@ -177,6 +182,8 @@ gw2al_api_ret gw2al_core__load_addon(wchar_t * name)
 	*addon = laddon;
 
 	addonStorage.register_obj(addon, nameH);
+
+	LOG_INFO(L"core", L"Loaded %s v%u.%u r%u", laddon.desc->name, laddon.desc->majorVer, laddon.desc->minorVer, laddon.desc->revision);
 	
 	return ret;
 }

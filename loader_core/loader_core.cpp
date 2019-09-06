@@ -57,7 +57,7 @@ void loader_core::LoadAddonsFromDir(const wchar_t * dir)
 						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll dependency outdated", dir, fdFile.cFileName, fdFile.cFileName);
 						break;
 					case GW2AL_OK:
-						LOG_INFO(L"core", L"%s/%s/gw2addon_%s.dll loaded", dir, fdFile.cFileName, fdFile.cFileName);
+						;// LOG_INFO(L"core", L"%s/%s/gw2addon_%s.dll loaded", dir, fdFile.cFileName, fdFile.cFileName);
 						break;
 					default:
 						LOG_ERROR(L"core", L"Error %u loading %s/%s/gw2addon_%s.dll", ret, dir, fdFile.cFileName, fdFile.cFileName);
