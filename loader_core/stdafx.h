@@ -6,7 +6,7 @@
 #include <d3d9.h>
 #include <stdarg.h>
 #include "version.h"
-#include "gw2al_api.h"
+#include "..\include\gw2al_api.h"
 #include "id_storage.h"
 #include "gw2al_api_impl.h"
 #include "loader_core.h"
