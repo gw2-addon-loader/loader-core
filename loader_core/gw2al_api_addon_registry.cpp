@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "build_version.h"
 
 id_storage<unsigned short, gw2al_addon*> addonStorage(0xFFFF);
 

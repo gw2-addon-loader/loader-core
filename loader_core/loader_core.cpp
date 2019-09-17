@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "build_version.h"
 
 loader_core loader_core::instance;
 
