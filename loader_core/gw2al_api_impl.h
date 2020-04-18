@@ -23,7 +23,7 @@ typedef struct gw2al_event_dsc {
 	gw2al_event_subscriber* subs;
 } gw2al_event_dsc;
 
-void gw2al_core__init();
+bool gw2al_core__init();
 void gw2al_core__init_func_registry();
 void gw2al_core__init_addon_registry();
 void gw2al_core__init_events();

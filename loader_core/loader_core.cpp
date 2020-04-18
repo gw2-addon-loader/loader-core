@@ -91,9 +91,10 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 {
 	if (SwitchState(LDR_ADDON_LOAD))
 	{
-		gw2al_core__init();
+		bool isFirstLoad = gw2al_core__init();
 
-		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) initialized", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME);
+		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) %S", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME, 
+			isFirstLoad ? "initialized" : "reinit");
 	}
 	else {
 		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. Trying to unload addons.");

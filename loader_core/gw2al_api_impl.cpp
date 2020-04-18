@@ -1,14 +1,21 @@
 #include "stdafx.h"
 
 FILE* logFile = NULL;
+bool firstInit = true;
 
-void gw2al_core__init()
+bool gw2al_core__init()
 {
+	if (!firstInit)
+		return false;
+
 	gw2al_core__init_func_registry();
 	gw2al_core__init_addon_registry();
 	gw2al_core__init_events();
 
 	logFile = fopen("gw2al_log.txt", "wb");
+
+	firstInit = false;
+	return true;
 }
 
 gw2al_hashed_name gw2al_core__hash_name(wchar_t * name)
@@ -37,8 +44,11 @@ void gw2al_core__client_unload()
 	if (logFile)
 	{
 		fflush(logFile);
-		fclose(logFile);
-		logFile = NULL;
+		//megai2: no reliable way to detect client unload
+		//log will be populated with new data, not created again and closed by OS on dll unload
+		//so we are kinda fine to keep it opened 
+		//fclose(logFile);
+		//logFile = NULL;
 	}
 }
 
