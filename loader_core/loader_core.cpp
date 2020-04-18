@@ -89,24 +89,39 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 
 IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 {
-	if (!SwitchState(LDR_ADDON_LOAD))
-		return nullptr;
+	if (SwitchState(LDR_ADDON_LOAD))
+	{
+		gw2al_core__init();
 
-	gw2al_core__init();
+		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) initialized", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME);
+	}
+	else {
+		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. Trying to unload addons.");
 
-	LOG_INFO(L"core", L"Addon loader v%u.%u (%S) loaded", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME);
+		SignalUnload();
+
+		if (!SwitchState(LDR_ADDON_LOAD))
+		{
+			LOG_ERROR(L"core", L"Failed to unload addons, failing D3DCreate call");
+			return nullptr;
+		}
+
+	}
 
 	LoadAddonsFromDir(L"addons");
 
 	IDirect3D9* (*d3d9_create_hook)() = (IDirect3D9* (*)())gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
 
-	LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
-
 	IDirect3D9* ret = NULL;
 
 	if (d3d9_create_hook)
+	{
+		LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
 		ret = d3d9_create_hook();
-	else {
+	} else 
+	{
+		LOG_DEBUG(L"core", L"Loading system d3d9.dll");
+
 		wchar_t infoBuf[4096];
 		GetSystemDirectory(infoBuf, 4096);
 		lstrcatW(infoBuf, L"\\d3d9.dll");
@@ -132,15 +147,17 @@ void loader_core::SignalUnload()
 {
 	if (SwitchState(LDR_UNLOAD))
 	{
-		LOG_INFO(L"core", L"Exiting, unloading core addon");
+		LOG_INFO(L"core", L"Unloading core addon");
 
 		if (gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)L"loader_core")) == GW2AL_DEP_STILL_LOADED)
 		{
 			LOG_ERROR(L"core", L"Some addons are not unloaded!");
 		}
-		SwitchState(LDR_UNLOADED);
+		else {
+			SwitchState(LDR_UNLOADED);
 
-		LOG_INFO(L"core", L"Unloaded");
+			LOG_INFO(L"core", L"Unloaded");
+		}
 	}
 }
 
@@ -151,6 +168,7 @@ BOOL loader_core::SwitchState(loader_state newState)
 	switch (state)
 	{
 		case LDR_DLL_LOADED:
+		case LDR_UNLOADED:
 			doSwitch = newState == LDR_ADDON_LOAD;
 			break;
 		case LDR_ADDON_LOAD:
