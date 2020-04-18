@@ -8,7 +8,7 @@ void gw2al_core__init()
 	gw2al_core__init_addon_registry();
 	gw2al_core__init_events();
 
-	fopen_s(&logFile,"gw2al_log.txt", "wb");
+	fopen_s(&logFile,"gw2al_log.txt", "w");
 }
 
 gw2al_hashed_name gw2al_core__hash_name(wchar_t * name)
