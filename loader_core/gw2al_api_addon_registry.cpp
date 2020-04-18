@@ -101,7 +101,10 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 		FreeLibrary(addon->addonLib);
 
 		free(addon);
-	} 
+	}
+	else {
+		LOG_ERROR(L"core", L"Unloading addon %s failed with error %u", addon->desc->name, ret);
+	}
 	
 	return ret;
 }
