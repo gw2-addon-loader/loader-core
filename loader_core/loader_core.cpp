@@ -149,7 +149,7 @@ void loader_core::SignalUnload()
 	{
 		LOG_INFO(L"core", L"Unloading core addon");
 
-		if (gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)L"loader_core")) == GW2AL_DEP_STILL_LOADED)
+		if (gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)L"loader_core")) != GW2AL_OK)
 		{
 			LOG_ERROR(L"core", L"Some addons are not unloaded!");
 		}

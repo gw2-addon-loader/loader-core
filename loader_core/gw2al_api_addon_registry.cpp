@@ -5,12 +5,13 @@ id_storage<unsigned short, gw2al_addon*> addonStorage(0xFFFF);
 
 gw2al_addon coreAddon;
 gw2al_addon_dsc coreAddonDsc;
+gw2al_hashed_name coreAddonName;
 
 gw2al_core_vtable api_vtable;
 
 gw2al_api_ret gw2al_core__inner_addon_unload(int gameExiting)
 {
-	return GW2AL_FAIL;
+	return GW2AL_OK;
 }
 
 void gw2al_core__init_addon_registry()
@@ -45,8 +46,9 @@ void gw2al_core__init_addon_registry()
 	coreAddon.addonLib = 0;
 	coreAddon.desc = &coreAddonDsc;
 	coreAddon.unload = &gw2al_core__inner_addon_unload;
-	
-	addonStorage.register_obj(&coreAddon, gw2al_core__hash_name((wchar_t*)coreAddonDsc.name));
+	coreAddonName = gw2al_core__hash_name((wchar_t*)coreAddonDsc.name);
+
+	addonStorage.register_obj(&coreAddon, coreAddonName);
 }
 
 gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
@@ -96,6 +98,10 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 
 	if (ret == GW2AL_OK)
 	{
+		//special case for core addon as we can't unload it here
+		if (name == coreAddonName)
+			return ret;
+
 		addonStorage.unregister_obj(name);
 
 		FreeLibrary(addon->addonLib);
