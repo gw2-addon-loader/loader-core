@@ -20,6 +20,7 @@ public:
 	loader_core();
 	~loader_core();
 	
+	IDirect3D9* RouteD3DCreate(UINT sdkVer);
 	IDirect3D9* OnD3DCreate(UINT sdkVer);
 	void SignalUnload();
 	

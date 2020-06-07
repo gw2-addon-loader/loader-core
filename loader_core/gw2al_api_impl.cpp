@@ -39,6 +39,7 @@ gw2al_hashed_name gw2al_core__hash_name(wchar_t * name)
 
 void gw2al_core__client_unload()
 {
+	LOG_DEBUG(L"core", L"client unload recived");
 	loader_core::instance.SignalUnload();
 
 	if (logFile)

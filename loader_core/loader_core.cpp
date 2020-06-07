@@ -87,31 +87,9 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 	gw2al_core__log_text(level, (wchar_t*)source, buf);
 }
 
-IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
+IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 {
-	if (SwitchState(LDR_ADDON_LOAD))
-	{
-		bool isFirstLoad = gw2al_core__init();
-
-		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) %S", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME, 
-			isFirstLoad ? "initialized" : "reinit");
-	}
-	else {
-		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. Trying to unload addons.");
-
-		SignalUnload();
-
-		if (!SwitchState(LDR_ADDON_LOAD))
-		{
-			LOG_ERROR(L"core", L"Failed to unload addons, failing D3DCreate call");
-			return nullptr;
-		}
-
-	}
-
-	LoadAddonsFromDir(L"addons");
-
-	IDirect3D9* (*d3d9_create_hook)() = (IDirect3D9* (*)())gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
+	IDirect3D9* (*d3d9_create_hook)() = (IDirect3D9 * (*)())gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
 
 	IDirect3D9* ret = NULL;
 
@@ -119,7 +97,8 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 	{
 		LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
 		ret = d3d9_create_hook();
-	} else 
+	}
+	else
 	{
 		LOG_DEBUG(L"core", L"Loading system d3d9.dll");
 
@@ -132,16 +111,31 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 		typedef IDirect3D9* (WINAPI* Direct3DCreate9Func)(UINT sdkver);
 
 		Direct3DCreate9Func origDirect3DCreate9 = (Direct3DCreate9Func)GetProcAddress(sys_d3d9, "Direct3DCreate9");
-		IDirect3D9* res = origDirect3DCreate9(sdkVer);
-
-		ret = res;
-	}	
-
-	SwitchState(LDR_INGAME);
+		ret = origDirect3DCreate9(sdkVer);		
+	}
 
 	LOG_DEBUG(L"core", L"ID3D9 = 0x%016llX", ret);
 
 	return ret;
+}
+
+IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
+{
+	if (SwitchState(LDR_ADDON_LOAD))
+	{
+		bool isFirstLoad = gw2al_core__init();
+
+		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) %S", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME, 
+			isFirstLoad ? "initialized" : "reinit");
+
+		LoadAddonsFromDir(L"addons");
+
+		SwitchState(LDR_INGAME);
+	}
+	else 
+		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. If your addon is not working, make sure you handle this situation!");
+
+	return RouteD3DCreate(sdkVer);
 }
 
 void loader_core::SignalUnload()
