@@ -61,6 +61,7 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 	LOG_DEBUG(L"core", L"Unloading addon %s", addon->desc->name);
 
 	unsigned short i;
+	bool pendingDeps = false;
 
 	gw2al_addon** list = addonStorage.get_array(&i);
 
@@ -71,7 +72,6 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 			--i;
 			continue;
 		}
-			
 
 		gw2al_addon_dsc* depList = list[i]->desc->dependList;
 
@@ -83,7 +83,7 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 				if (name == gw2al_core__hash_name((wchar_t*)depList[j].name))
 				{
 					if (gw2al_core__unload_addon(gw2al_core__hash_name((wchar_t*)list[i]->desc->name)) != GW2AL_OK)
-						return GW2AL_DEP_STILL_LOADED;
+						pendingDeps = true;
 					break;
 				}
 				++j;
@@ -93,6 +93,9 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 
 		--i;
 	}
+
+	if (pendingDeps)
+		return GW2AL_DEP_STILL_LOADED;
 
 	gw2al_api_ret ret = addon->unload(loader_core::instance.GetCurrentState() != LDR_INGAME);
 
