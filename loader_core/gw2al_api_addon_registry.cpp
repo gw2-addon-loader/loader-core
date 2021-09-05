@@ -168,7 +168,7 @@ gw2al_api_ret gw2al_core__load_addon(const wchar_t * name)
 				depDsc = gw2al_core__query_addon(gw2al_core__hash_name((wchar_t*)laddon.desc->dependList[i].name));
 			}
 
-			if ((depDsc->majorVer < laddon.desc->dependList[i].majorVer) || (depDsc->minorVer < laddon.desc->dependList[i].minorVer))
+			if ((depDsc->majorVer != laddon.desc->dependList[i].majorVer) || (depDsc->minorVer < laddon.desc->dependList[i].minorVer))
 			{
 				LOG_WARNING(L"core", L"Addon \"%s\" is not loaded due to wrong dependency version \"%s\". Require v%u.%u(r%u) but have v%u.%u(r%u)", name, laddon.desc->dependList[i].name,
 					laddon.desc->dependList[i].majorVer, laddon.desc->dependList[i].minorVer, laddon.desc->dependList[i].revision,
