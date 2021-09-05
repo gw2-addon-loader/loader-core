@@ -118,7 +118,7 @@ gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name)
 	return ret;
 }
 
-gw2al_api_ret gw2al_core__load_addon(wchar_t * name)
+gw2al_api_ret gw2al_core__load_addon(const wchar_t * name)
 {
 	LOG_DEBUG(L"core", L"Loading addon %s", name);
 

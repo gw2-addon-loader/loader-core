@@ -29,7 +29,7 @@ void gw2al_core__init_addon_registry();
 void gw2al_core__init_events();
 
 //converts string to hash for usage in other functions
-gw2al_hashed_name gw2al_core__hash_name(wchar_t* name);
+gw2al_hashed_name gw2al_core__hash_name(const wchar_t* name);
 
 //register/unregister user functions to be called by other addons
 gw2al_api_ret gw2al_core__register_function(void* function, gw2al_hashed_name name);
@@ -39,11 +39,11 @@ void gw2al_core__unregister_function(gw2al_hashed_name name);
 void* gw2al_core__query_function(gw2al_hashed_name name);
 
 //fills table of functions using query_function
-void gw2al_core__fill_vtable(gw2al_hashed_name* nameList, void** vtable);
+void gw2al_core__fill_vtable(const gw2al_hashed_name* nameList, void** vtable);
 
 //functions to unload/load addons 
 gw2al_api_ret gw2al_core__unload_addon(gw2al_hashed_name name);
-gw2al_api_ret gw2al_core__load_addon(wchar_t* name);
+gw2al_api_ret gw2al_core__load_addon(const wchar_t* name);
 
 //function to get currently loaded addon description
 gw2al_addon_dsc* gw2al_core__query_addon(gw2al_hashed_name name);
@@ -59,4 +59,4 @@ unsigned int gw2al_core__trigger_event(gw2al_event_id id, void* data);
 
 void gw2al_core__client_unload();
 
-void gw2al_core__log_text(gw2al_log_level level, wchar_t* source, wchar_t* text);
+void gw2al_core__log_text(gw2al_log_level level, const wchar_t* source, const wchar_t* text);

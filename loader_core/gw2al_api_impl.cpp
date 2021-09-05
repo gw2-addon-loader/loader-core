@@ -3,6 +3,13 @@
 FILE* logFile = NULL;
 bool firstInit = true;
 
+static const wchar_t* lvlPrefix[] = {
+	L"[INFO] ",
+	L"[ERR] ",
+	L"[WARN] ",
+	L"[DEBUG] "
+};
+
 bool gw2al_core__init()
 {
 	if (!firstInit)
@@ -18,7 +25,7 @@ bool gw2al_core__init()
 	return true;
 }
 
-gw2al_hashed_name gw2al_core__hash_name(wchar_t * name)
+gw2al_hashed_name gw2al_core__hash_name(const wchar_t * name)
 {
 	unsigned int msz = lstrlenW(name)*2;
 
@@ -53,7 +60,8 @@ void gw2al_core__client_unload()
 	}
 }
 
-void gw2al_core__log_text(gw2al_log_level level, wchar_t* source, wchar_t* text)
+
+void gw2al_core__log_text(gw2al_log_level level, const  wchar_t* source, const wchar_t* text)
 {
 #ifndef _DEBUG
 	if (level > LL_WARN)
@@ -62,13 +70,6 @@ void gw2al_core__log_text(gw2al_log_level level, wchar_t* source, wchar_t* text)
 
 	if (!logFile)
 		return;
-
-	static const wchar_t* lvlPrefix[] = {
-		L"[INFO] ",
-		L"[ERR] ",
-		L"[WARN] ",
-		L"[DEBUG] "
-	};
 
 	fwrite(lvlPrefix[level], sizeof(wchar_t), wcslen(lvlPrefix[level]), logFile);	
 	fwrite(source, sizeof(wchar_t), wcslen(source), logFile);

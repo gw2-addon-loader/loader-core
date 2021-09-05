@@ -36,7 +36,7 @@ void * gw2al_core__query_function(gw2al_hashed_name name)
 	return funcStorage.query_obj(name);
 }
 
-void gw2al_core__fill_vtable(gw2al_hashed_name * nameList, void ** vtable)
+void gw2al_core__fill_vtable(const gw2al_hashed_name * nameList, void ** vtable)
 {
 	unsigned int i = 0;
 	while (nameList[i] != 0)

@@ -56,7 +56,7 @@ typedef enum gw2al_log_level {
 
 typedef struct gw2al_core_vtable {
 	//converts string to hash for usage in other functions
-	gw2al_hashed_name (*hash_name)(wchar_t* name);
+	gw2al_hashed_name (*hash_name)(const wchar_t* name);
 
 	//register/unregister user functions to be called by other addons
 	gw2al_api_ret (*register_function)(void* function, gw2al_hashed_name name);
@@ -66,11 +66,11 @@ typedef struct gw2al_core_vtable {
 	void* (*query_function)(gw2al_hashed_name name);
 
 	//fills table of functions using query_function
-	void (*fill_vtable)(gw2al_hashed_name* nameList, void** vtable);
+	void (*fill_vtable)(const gw2al_hashed_name* nameList, void** vtable);
 			
 	//functions to unload/load addons 
 	gw2al_api_ret (*unload_addon)(gw2al_hashed_name name);
-	gw2al_api_ret (*load_addon)(wchar_t* name);
+	gw2al_api_ret (*load_addon)(const wchar_t* name);
 
 	//function to get currently loaded addon description
 	gw2al_addon_dsc* (*query_addon)(gw2al_hashed_name name);
@@ -90,7 +90,7 @@ typedef struct gw2al_core_vtable {
 
 	//simple logging function
 
-	void (*log_text)(gw2al_log_level level, wchar_t* source, wchar_t* text);
+	void (*log_text)(gw2al_log_level level, const wchar_t* source, const wchar_t* text);
 
 } gw2al_core_vtable;
 
