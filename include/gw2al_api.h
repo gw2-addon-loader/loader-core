@@ -45,6 +45,7 @@ typedef void(*gw2al_api_event_handler)(void* data);
 #define GW2AL_CORE_FUNN_CLIENT_UNLOAD 13
 #define GW2AL_CORE_FUNN_LOG_TEXT 14
 #define GW2AL_CORE_FUNN_D3DCREATE_HOOK 15
+#define GW2AL_CORE_FUNN_D3D11CREATE_HOOK 16
 
 typedef enum gw2al_log_level {
 	LL_INFO = 0,

@@ -54,6 +54,9 @@
     <ClCompile Include="d3d9_dll_impl.cpp">
       <Filter>instance</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11_dll_impl.cpp">
+      <Filter>instance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="deffile" />

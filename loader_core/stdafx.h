@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include <d3d9.h>
+#include <d3d11.h>
 #include <stdarg.h>
 #include "version.h"
 #include "..\include\gw2al_api.h"

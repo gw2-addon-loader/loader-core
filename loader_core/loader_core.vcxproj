@@ -72,21 +72,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>d3d9</TargetName>
+    <TargetName>d3d11</TargetName>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include/;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>d3d9</TargetName>
+    <TargetName>d3d11</TargetName>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include/;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>d3d9</TargetName>
+    <TargetName>d3d11</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>d3d9</TargetName>
+    <TargetName>d3d11</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -166,6 +166,7 @@
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="d3d11_dll_impl.cpp" />
     <ClCompile Include="d3d9_dll_impl.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="gw2al_api_addon_registry.cpp" />

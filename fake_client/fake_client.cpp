@@ -1,12 +1,10 @@
 ﻿#include "pch.h"
 #include <iostream>
 
-int main()
+int dx9_test()
 {
-	std::cout << "fake_client start!\n"; 
-
 	std::cout << "Loading d3d9.dll \n";
-	
+
 	HMODULE d3d9md = LoadLibrary(L"d3d9.dll");
 
 	if (!d3d9md)
@@ -46,4 +44,16 @@ int main()
 	system("pause");
 
 	return 0;
+}
+
+int main()
+{
+	std::cout << "fake_client start!\n";
+
+	int ret = 0;
+	//ret = dx9_test();
+	ret = dx11_test();
+
+
+	return ret;
 }

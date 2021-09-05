@@ -26,5 +26,8 @@
     <ClCompile Include="fake_client.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="dx11_win.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

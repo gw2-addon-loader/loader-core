@@ -87,6 +87,23 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 	gw2al_core__log_text(level, (wchar_t*)source, buf);
 }
 
+void loader_core::innerInit()
+{
+	if (SwitchState(LDR_ADDON_LOAD))
+	{
+		bool isFirstLoad = gw2al_core__init();
+
+		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) %S", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME,
+			isFirstLoad ? "initialized" : "reinit");
+
+		LoadAddonsFromDir(L"addons");
+
+		SwitchState(LDR_INGAME);
+	}
+	else
+		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. If your addon is not working, make sure you handle this situation!");
+}
+
 IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 {
 	IDirect3D9* (*d3d9_create_hook)() = (IDirect3D9 * (*)())gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
@@ -120,22 +137,46 @@ IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 }
 
 IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
-{
-	if (SwitchState(LDR_ADDON_LOAD))
-	{
-		bool isFirstLoad = gw2al_core__init();
-
-		LOG_INFO(L"core", L"Addon loader v%u.%u (%S) %S", LOADER_CORE_VER_MAJOR, LOADER_CORE_VER_MINOR, LOADER_CORE_VER_NAME, 
-			isFirstLoad ? "initialized" : "reinit");
-
-		LoadAddonsFromDir(L"addons");
-
-		SwitchState(LDR_INGAME);
-	}
-	else 
-		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. If your addon is not working, make sure you handle this situation!");
-
+{	
+	innerInit();
 	return RouteD3DCreate(sdkVer);
+}
+
+HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
+{
+	typedef HRESULT (WINAPI* D3D11CreateDeviceAndSwapChainFunc)(DX11_CREATE_FDEF);
+	D3D11CreateDeviceAndSwapChainFunc d3d11_create_hook = (D3D11CreateDeviceAndSwapChainFunc)gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
+	HRESULT ret = NULL;
+
+	if (d3d11_create_hook)
+	{
+		LOG_DEBUG(L"core", L"Calling D3D11Create, hook = 0x%016llX", d3d11_create_hook);
+		ret = d3d11_create_hook(DX11_CREATE_PLIST);
+	}
+	else
+	{
+		LOG_DEBUG(L"core", L"Loading system d3d11.dll");
+
+		wchar_t infoBuf[4096];
+		GetSystemDirectory(infoBuf, 4096);
+		lstrcatW(infoBuf, L"\\d3d11.dll");
+
+		HMODULE sys_d3d11 = LoadLibrary(infoBuf);
+
+
+		D3D11CreateDeviceAndSwapChainFunc origDX11Create = (D3D11CreateDeviceAndSwapChainFunc)GetProcAddress(sys_d3d11, "D3D11CreateDeviceAndSwapChain");
+		ret = origDX11Create(DX11_CREATE_PLIST);
+	}
+
+	LOG_DEBUG(L"core", L"ID3D11Device = 0x%016llX", *ppDevice);
+
+	return ret;
+}
+
+HRESULT loader_core::OnD3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIVER_TYPE DriverType, HMODULE Software, UINT Flags, const D3D_FEATURE_LEVEL* pFeatureLevels, UINT FeatureLevels, UINT SDKVersion, const DXGI_SWAP_CHAIN_DESC* pSwapChainDesc, IDXGISwapChain** ppSwapChain, ID3D11Device** ppDevice, D3D_FEATURE_LEVEL* pFeatureLevel, ID3D11DeviceContext** ppImmediateContext)
+{
+	innerInit();
+	return RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_PLIST);
 }
 
 void loader_core::SignalUnload()
