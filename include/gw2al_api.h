@@ -1,7 +1,13 @@
 #pragma once
 
+#define GW2AL_API_VER_MAJOR 1
+#define GW2AL_API_VER_MINOR 0
+
+#define GW2AL_CORE_DEP_ENTRY { L"loader_core", L"core gw2 al API", GW2AL_API_VER_MAJOR, GW2AL_API_VER_MINOR, 1, 0 }
+
 #define gw2al_hashed_name unsigned long long
 #define gw2al_event_id unsigned long
+
 
 typedef struct gw2al_addon_dsc {
 	const wchar_t* name;
