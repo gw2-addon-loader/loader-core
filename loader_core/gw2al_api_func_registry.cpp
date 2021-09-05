@@ -17,6 +17,7 @@ void gw2al_core__init_func_registry()
 	gw2al_core__register_function(gw2al_core__query_event, GW2AL_CORE_FUNN_QUERY_EVENT);
 	gw2al_core__register_function(gw2al_core__trigger_event, GW2AL_CORE_FUNN_TRIGGER_EVENT);
 	gw2al_core__register_function(gw2al_core__client_unload, GW2AL_CORE_FUNN_CLIENT_UNLOAD);	 
+	gw2al_core__register_function(gw2al_core__log_text, GW2AL_CORE_FUNN_LOG_TEXT_SYNC);
 	gw2al_core__register_function(gw2al_core__log_text, GW2AL_CORE_FUNN_LOG_TEXT);
 }
 

@@ -49,9 +49,10 @@ typedef void(*gw2al_api_event_handler)(void* data);
 #define GW2AL_CORE_FUNN_QUERY_EVENT 11
 #define GW2AL_CORE_FUNN_TRIGGER_EVENT 12
 #define GW2AL_CORE_FUNN_CLIENT_UNLOAD 13
-#define GW2AL_CORE_FUNN_LOG_TEXT 14
-#define GW2AL_CORE_FUNN_D3DCREATE_HOOK 15
-#define GW2AL_CORE_FUNN_D3D11CREATE_HOOK 16
+#define GW2AL_CORE_FUNN_LOG_TEXT_SYNC 14
+#define GW2AL_CORE_FUNN_LOG_TEXT 15
+#define GW2AL_CORE_FUNN_D3DCREATE_HOOK 16
+#define GW2AL_CORE_FUNN_D3D11CREATE_HOOK 17
 
 typedef enum gw2al_log_level {
 	LL_INFO = 0,
@@ -96,6 +97,7 @@ typedef struct gw2al_core_vtable {
 
 	//simple logging function
 
+	void (*log_text_sync)(gw2al_log_level level, const wchar_t* source, const wchar_t* text);
 	void (*log_text)(gw2al_log_level level, const wchar_t* source, const wchar_t* text);
 
 } gw2al_core_vtable;

@@ -59,4 +59,5 @@ unsigned int gw2al_core__trigger_event(gw2al_event_id id, void* data);
 
 void gw2al_core__client_unload();
 
+void gw2al_core__log_text_sync(gw2al_log_level level, const wchar_t* source, const wchar_t* text);
 void gw2al_core__log_text(gw2al_log_level level, const wchar_t* source, const wchar_t* text);

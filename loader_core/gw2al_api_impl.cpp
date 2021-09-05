@@ -60,6 +60,13 @@ void gw2al_core__client_unload()
 	}
 }
 
+void gw2al_core__log_text_sync(gw2al_log_level level, const  wchar_t* source, const wchar_t* text)
+{
+	gw2al_core__log_text(level, source, text);
+
+	fflush(logFile);
+}
+
 
 void gw2al_core__log_text(gw2al_log_level level, const  wchar_t* source, const wchar_t* text)
 {
