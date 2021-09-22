@@ -145,7 +145,7 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 {
 	typedef HRESULT (WINAPI* D3D11CreateDeviceAndSwapChainFunc)(DX11_CREATE_FDEF);
-	D3D11CreateDeviceAndSwapChainFunc d3d11_create_hook = (D3D11CreateDeviceAndSwapChainFunc)gw2al_core__query_function(GW2AL_CORE_FUNN_D3DCREATE_HOOK);
+	D3D11CreateDeviceAndSwapChainFunc d3d11_create_hook = (D3D11CreateDeviceAndSwapChainFunc)gw2al_core__query_function(GW2AL_CORE_FUNN_D3D11CREATE_HOOK);
 	HRESULT ret = NULL;
 
 	if (d3d11_create_hook)
