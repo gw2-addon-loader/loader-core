@@ -101,7 +101,7 @@ void loader_core::innerInit()
 		SwitchState(LDR_INGAME);
 	}
 	else
-		LOG_WARNING(L"core", L"D3DCreate called twice without proper unload. If your addon is not working, make sure you handle this situation!");
+		LOG_WARNING(L"core", L"Init called twice without proper unload. If your addon is not working, make sure you handle this situation!");
 }
 
 IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
@@ -135,6 +135,61 @@ IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 
 	return ret;
 }
+
+HRESULT loader_core::RouteDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, void** ppFactory)
+{
+	typedef HRESULT(WINAPI* DXGIFactoryCreate0)(REFIID riid, void** ppFactory);
+	typedef HRESULT(WINAPI* DXGIFactoryCreate1)(REFIID riid, void** ppFactory);
+	typedef HRESULT(WINAPI* DXGIFactoryCreate2)(UINT Flags, REFIID riid, void** ppFactory);
+	typedef HRESULT(WINAPI* DXGIFactoryCreateHook)(UINT ver, UINT Flags, REFIID riid, void** ppFactory);
+
+	DXGIFactoryCreateHook dxgi_create_hook = (DXGIFactoryCreateHook)gw2al_core__query_function(GW2AL_CORE_FUNN_DXGICREATE_HOOK);
+
+	HRESULT ret = NULL;
+
+	if (dxgi_create_hook)
+	{
+		LOG_DEBUG(L"core", L"Calling DXGICreate, hook = 0x%016llX", dxgi_create_hook);
+		ret = dxgi_create_hook(ver, Flags, riid, ppFactory);
+	}
+	else
+	{
+		LOG_DEBUG(L"core", L"Loading system dxgi.dll");
+
+		wchar_t infoBuf[4096];
+		GetSystemDirectory(infoBuf, 4096);
+		lstrcatW(infoBuf, L"\\dxgi.dll");
+
+		HMODULE sys_dxgi = LoadLibrary(infoBuf);
+
+		DXGIFactoryCreate0 origDXGI0 = (DXGIFactoryCreate0)GetProcAddress(sys_dxgi, "CreateDXGIFactory");
+		DXGIFactoryCreate1 origDXGI1 = (DXGIFactoryCreate1)GetProcAddress(sys_dxgi, "CreateDXGIFactory1");
+		DXGIFactoryCreate2 origDXGI2 = (DXGIFactoryCreate2)GetProcAddress(sys_dxgi, "CreateDXGIFactory2");
+		switch (ver)
+		{
+		case 0:
+			ret = origDXGI0(riid, ppFactory);
+			break;
+		case 1:
+			ret = origDXGI1(riid, ppFactory);
+			break;
+		case 2:
+			ret = origDXGI2(Flags, riid, ppFactory);
+			break;
+		}
+	}
+
+	LOG_DEBUG(L"core", L"IDXGIFactory = %p, ret = %u", *ppFactory, ret);
+
+	return ret;
+}
+
+HRESULT loader_core::OnDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, void** ppFactory)
+{
+	innerInit();
+	return RouteDXGIFactoryCreate(ver, Flags, riid, ppFactory);
+}
+
 
 IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 {	

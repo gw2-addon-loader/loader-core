@@ -1,0 +1,8 @@
+LIBRARY addonLoader.dll
+EXPORTS
+
+; dxgi
+
+	CreateDXGIFactory
+	CreateDXGIFactory1
+	CreateDXGIFactory2

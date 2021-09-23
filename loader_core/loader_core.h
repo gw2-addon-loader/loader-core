@@ -27,6 +27,8 @@ public:
 	IDirect3D9* OnD3DCreate(UINT sdkVer);
 	HRESULT RouteD3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIVER_TYPE DriverType, HMODULE Software, UINT Flags, const D3D_FEATURE_LEVEL* pFeatureLevels, UINT FeatureLevels, UINT SDKVersion, const DXGI_SWAP_CHAIN_DESC* pSwapChainDesc, IDXGISwapChain** ppSwapChain, ID3D11Device** ppDevice, D3D_FEATURE_LEVEL* pFeatureLevel, ID3D11DeviceContext** ppImmediateContext);
 	HRESULT OnD3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIVER_TYPE DriverType, HMODULE Software, UINT Flags, const D3D_FEATURE_LEVEL* pFeatureLevels, UINT FeatureLevels, UINT SDKVersion, const DXGI_SWAP_CHAIN_DESC* pSwapChainDesc, IDXGISwapChain** ppSwapChain, ID3D11Device** ppDevice, D3D_FEATURE_LEVEL* pFeatureLevel, ID3D11DeviceContext** ppImmediateContext);
+	HRESULT RouteDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, void** ppFactory);
+	HRESULT OnDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, void** ppFactory);
 	void SignalUnload();
 	
 	loader_state GetCurrentState();

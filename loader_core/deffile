@@ -1,4 +1,25 @@
-LIBRARY d3d11.dll
+LIBRARY addonLoader.dll
 EXPORTS
+
+; d3d9
+
+	Direct3DCreate9 @30
+	Direct3DCreate9Ex
+	D3DPERF_BeginEvent
+	D3DPERF_EndEvent
+	D3DPERF_SetMarker
+	D3DPERF_SetRegion
+	D3DPERF_QueryRepeatFrame
+	D3DPERF_SetOptions
+	D3DPERF_GetStatus
+
+; d3d11
+
 	D3D11CreateDevice
 	D3D11CreateDeviceAndSwapChain
+
+; dxgi
+
+	CreateDXGIFactory 
+	CreateDXGIFactory1 
+	CreateDXGIFactory2 
