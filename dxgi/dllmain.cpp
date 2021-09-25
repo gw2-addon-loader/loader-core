@@ -4,6 +4,7 @@
 typedef HRESULT(WINAPI* DXGIFactoryCreate0)(REFIID riid, void** ppFactory);
 typedef HRESULT(WINAPI* DXGIFactoryCreate1)(REFIID riid, void** ppFactory);
 typedef HRESULT(WINAPI* DXGIFactoryCreate2)(UINT Flags, REFIID riid, void** ppFactory);
+typedef HRESULT(WINAPI* DXGIDebugInterfaceGet1)(UINT Flags, REFIID riid, void** pDebug);
 
 HMODULE target_lib = 0;
 const wchar_t* target_lib_name = L"addonLoader.dll";
@@ -34,6 +35,12 @@ HRESULT WINAPI CreateDXGIFactory2(UINT Flags, REFIID riid, void** ppFactory)
 {
     DXGIFactoryCreate2 fun = (DXGIFactoryCreate2)getTargetProc("CreateDXGIFactory2");
     return fun(Flags, riid, ppFactory);
+}
+
+HRESULT DXGIGetDebugInterface1(UINT Flags, REFIID riid, void** pDebug)
+{
+    DXGIDebugInterfaceGet1 fun = (DXGIDebugInterfaceGet1)getTargetProc("DXGIGetDebugInterface1");
+    return fun(Flags, riid, pDebug);
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
