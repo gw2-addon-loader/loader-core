@@ -102,6 +102,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>deffile</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -117,6 +122,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>deffile</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,6 +145,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -155,6 +170,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>deffile</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\gw2al_api.h" />

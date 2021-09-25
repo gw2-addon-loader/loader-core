@@ -101,6 +101,11 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -117,6 +122,11 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -133,6 +143,11 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -153,6 +168,11 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>IF DEFINED GW2_INSTALL_DIR (
+xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
