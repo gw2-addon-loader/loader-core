@@ -1,4 +1,4 @@
-LIBRARY addonLoader.dll
+LIBRARY d3d9.dll
 EXPORTS
 
 ; d3d9
