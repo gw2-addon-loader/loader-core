@@ -39,6 +39,10 @@ void loader_core::LoadAddonsFromDir(const wchar_t * dir)
 		{
 			if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			{
+				//if addon loaded as dependency, do not try to load it again
+				if (gw2al_core__query_addon(gw2al_core__hash_name(fdFile.cFileName)))
+					continue;
+
 				LOG_INFO(L"core", L"Loading %s", fdFile.cFileName);
 
 				gw2al_api_ret ret = gw2al_core__load_addon(fdFile.cFileName);
