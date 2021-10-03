@@ -159,6 +159,7 @@ gw2al_api_ret gw2al_core__load_addon(const wchar_t * name)
 
 			if (!depDsc)
 			{
+				LOG_INFO(L"core", L"Loading dependency \"%s\" for addon \"%s\"", laddon.desc->dependList[i].name, name);
 				if (gw2al_core__load_addon((wchar_t*)laddon.desc->dependList[i].name) != GW2AL_OK)
 				{
 					LOG_WARNING(L"core", L"Addon \"%s\" is not loaded due to missing dependency \"%s\"", name, laddon.desc->dependList[i].name);
