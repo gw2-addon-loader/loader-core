@@ -49,7 +49,7 @@ void loader_core::LoadAddonsFromDir(const wchar_t * dir)
 						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll missing one of export functions", dir, fdFile.cFileName, fdFile.cFileName);
 						break;
 					case GW2AL_NOT_FOUND:
-						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll not found", dir, fdFile.cFileName, fdFile.cFileName);
+						LOG_WARNING(L"core", L"%s/%s/gw2addon_%s.dll not found", dir, fdFile.cFileName, fdFile.cFileName);
 						break;
 					case GW2AL_DEP_NOT_LOADED:
 						LOG_ERROR(L"core", L"%s/%s/gw2addon_%s.dll dependency missing", dir, fdFile.cFileName, fdFile.cFileName);
