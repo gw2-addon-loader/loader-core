@@ -100,8 +100,6 @@ void loader_core::innerInit()
 
 		SwitchState(LDR_INGAME);
 	}
-	else
-		LOG_WARNING(L"core", L"Init called twice without proper unload. If your addon is not working, make sure you handle this situation!");
 }
 
 IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
