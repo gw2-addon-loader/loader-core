@@ -205,6 +205,10 @@ HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 	D3D11CreateDeviceAndSwapChainFunc d3d11_create_hook = (D3D11CreateDeviceAndSwapChainFunc)gw2al_core__query_function(GW2AL_CORE_FUNN_D3D11CREATE_HOOK);
 	HRESULT ret = NULL;
 
+#ifdef _DEBUG
+	Flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 	if (d3d11_create_hook)
 	{
 		LOG_DEBUG(L"core", L"Calling D3D11Create, hook = 0x%016llX", d3d11_create_hook);
@@ -219,7 +223,6 @@ HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 		lstrcatW(infoBuf, L"\\d3d11.dll");
 
 		HMODULE sys_d3d11 = LoadLibrary(infoBuf);
-
 
 		D3D11CreateDeviceAndSwapChainFunc origDX11Create = (D3D11CreateDeviceAndSwapChainFunc)GetProcAddress(sys_d3d11, "D3D11CreateDeviceAndSwapChain");
 		ret = origDX11Create(DX11_CREATE_PLIST);

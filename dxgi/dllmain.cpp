@@ -43,6 +43,35 @@ HRESULT DXGIGetDebugInterface1(UINT Flags, REFIID riid, void** pDebug)
     return fun(Flags, riid, pDebug);
 }
 
+HMODULE GetDXGIModule()
+{
+    wchar_t infoBuf[4096];
+    GetSystemDirectory(infoBuf, 4096);
+    lstrcatW(infoBuf, L"\\dxgi.dll");
+
+    return LoadLibrary(infoBuf);
+}
+
+FARPROC GetDXGIFunction(LPCSTR name)
+{
+    static HMODULE hmod = GetDXGIModule();
+    return GetProcAddress(hmod, name);
+}
+
+#define GET_DXGI_FUNC(name) (decltype(name)*)GetDXGIFunction(#name)
+
+extern "C" void* WINAPI CompatValue()
+{
+    static auto func = GET_DXGI_FUNC(CompatValue);
+    return func();
+}
+
+extern "C" void* WINAPI CompatString()
+{
+    static auto func = GET_DXGI_FUNC(CompatString);
+    return func();
+}
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
