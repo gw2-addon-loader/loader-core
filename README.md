@@ -27,6 +27,6 @@ Addon API includes several parts:
 Details in <include/gw2al_api.h>
 
 # Installation
-   
-1. Download the [latest release](https://github.com/gw2-addon-loader/loader-core/releases/latest) (ZIP archive loader_core_*.zip).
-2. Extract the contents (bin64, addonLoader.dll, d3d11.dll, dxgi.dll) and put the folder and files in your GW2 installation directory.
+ 
+1. Download and extract the archive `loader_core_*.zip` found in the [latest release](https://github.com/gw2-addon-loader/loader-core/releases/latest).
+2. Place the contents (`bin64`, `addonLoader.dll`, `d3d11.dll`, `dxgi.dll`) in your game installation directory (with the default game install path, this would be `C:\Program Files\Guild Wars 2`).
