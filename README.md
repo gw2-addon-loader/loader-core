@@ -26,9 +26,7 @@ Addon API includes several parts:
 
 Details in <include/gw2al_api.h>
 
-
-
-
-
-
-
+# Installation
+   
+1. Download the [latest release](https://github.com/gw2-addon-loader/loader-core/releases/latest) (ZIP archive loader_core_*.zip).
+2. Extract the contents (bin64, addonLoader.dll, d3d11.dll, dxgi.dll) and put the folder and files in your GW2 installation directory.
