@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "build_version.h"
 
 loader_core loader_core::instance;
@@ -199,6 +199,14 @@ IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
 	return RouteD3DCreate(sdkVer);
 }
 
+enum class WarpSelection
+{
+	ASK = 0,
+	ON = 1,
+	OFF = 2
+};
+WarpSelection g_warpSelection;
+
 HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 {
 	typedef HRESULT (WINAPI* D3D11CreateDeviceAndSwapChainFunc)(DX11_CREATE_FDEF);
@@ -207,6 +215,14 @@ HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 
 #ifdef _DEBUG
 	Flags |= D3D11_CREATE_DEVICE_DEBUG;
+	if (g_warpSelection == WarpSelection::ASK)
+		g_warpSelection = MessageBoxA(nullptr, "Debug addon loader active. Enable WARP?", "WARP", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TASKMODAL) == IDYES ? WarpSelection::ON : WarpSelection::OFF;
+
+	if (g_warpSelection == WarpSelection::ON)
+	{
+		DriverType = D3D_DRIVER_TYPE_WARP;
+		pAdapter = nullptr;
+	}
 #endif
 
 	if (d3d11_create_hook)
