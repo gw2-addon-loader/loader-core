@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "build_version.h"
 
 loader_core loader_core::instance;
@@ -93,6 +93,10 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 
 void loader_core::innerInit()
 {
+	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
+	if(directDraw)
+		return;
+
 	if (SwitchState(LDR_ADDON_LOAD))
 	{
 		bool isFirstLoad = gw2al_core__init();
@@ -112,7 +116,9 @@ IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 
 	IDirect3D9* ret = NULL;
 
-	if (d3d9_create_hook)
+	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
+
+	if (!directDraw && d3d9_create_hook)
 	{
 		LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
 		ret = d3d9_create_hook();
@@ -149,7 +155,9 @@ HRESULT loader_core::RouteDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, v
 
 	HRESULT ret = NULL;
 
-	if (dxgi_create_hook)
+	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
+
+	if (!directDraw && dxgi_create_hook)
 	{
 		LOG_DEBUG(L"core", L"Calling DXGICreate, hook = 0x%016llX", dxgi_create_hook);
 		ret = dxgi_create_hook(ver, Flags, riid, ppFactory);
