@@ -1,6 +1,10 @@
 ﻿#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+using Compat_t = void*(WINAPI *)();
+Compat_t RealCompatValue = nullptr;
+Compat_t RealCompatString = nullptr;
+
 typedef HRESULT(WINAPI* DXGIFactoryCreate0)(REFIID riid, void** ppFactory);
 typedef HRESULT(WINAPI* DXGIFactoryCreate1)(REFIID riid, void** ppFactory);
 typedef HRESULT(WINAPI* DXGIFactoryCreate2)(UINT Flags, REFIID riid, void** ppFactory);
@@ -62,21 +66,29 @@ FARPROC GetDXGIFunction(LPCSTR name)
 
 extern "C" void* WINAPI CompatValue()
 {
-    static auto func = GET_DXGI_FUNC(CompatValue);
-    return func();
+    return RealCompatValue();
 }
 
 extern "C" void* WINAPI CompatString()
 {
-    static auto func = GET_DXGI_FUNC(CompatString);
-    return func();
+    return RealCompatString();
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
+                       DWORD  fdwReason,
                        LPVOID lpReserved
                      )
 {
-    return TRUE;
+    switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+        RealCompatValue = GET_DXGI_FUNC(CompatValue);
+        RealCompatString = GET_DXGI_FUNC(CompatString);
+        break;
+    case DLL_PROCESS_DETACH:
+        RealCompatValue = nullptr;
+        RealCompatString = nullptr;
+        break;
+    }
 }
 

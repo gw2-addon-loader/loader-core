@@ -97,7 +97,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>deffile</ModuleDefinitionFile>
+      <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>IF DEFINED GW2_INSTALL_DIR (
@@ -135,7 +135,7 @@ xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>deffile</ModuleDefinitionFile>
+      <ModuleDefinitionFile>deffile.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>IF DEFINED GW2_INSTALL_DIR (
@@ -170,7 +170,7 @@ xcopy "$(TargetPath)" "$(GW2_INSTALL_DIR)\" /Y
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="deffile" />
+    <None Include="deffile.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
