@@ -222,14 +222,17 @@ HRESULT loader_core::RouteD3D11CreateDeviceAndSwapChain(DX11_CREATE_FDEF)
 	HRESULT ret = NULL;
 
 #ifdef _DEBUG
-	Flags |= D3D11_CREATE_DEVICE_DEBUG;
-	if (g_warpSelection == WarpSelection::ASK)
-		g_warpSelection = MessageBoxA(nullptr, "Debug addon loader active. Enable WARP?", "WARP", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TASKMODAL) == IDYES ? WarpSelection::ON : WarpSelection::OFF;
-
-	if (g_warpSelection == WarpSelection::ON)
+	if(IsDebuggerPresent())
 	{
-		DriverType = D3D_DRIVER_TYPE_WARP;
-		pAdapter = nullptr;
+	    Flags |= D3D11_CREATE_DEVICE_DEBUG;
+	    if (g_warpSelection == WarpSelection::ASK)
+		    g_warpSelection = MessageBoxA(nullptr, "Debug addon loader active. Enable WARP?", "WARP", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TASKMODAL) == IDYES ? WarpSelection::ON : WarpSelection::OFF;
+
+	    if (g_warpSelection == WarpSelection::ON)
+	    {
+		    DriverType = D3D_DRIVER_TYPE_WARP;
+		    pAdapter = nullptr;
+	    }
 	}
 #endif
 
