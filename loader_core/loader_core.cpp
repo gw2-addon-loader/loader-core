@@ -5,11 +5,11 @@ loader_core loader_core::instance;
 
 loader_core::loader_core()
 {
-	state = LDR_DLL_LOADED;	   
+	state = LDR_DLL_LOADED;
 }
 
 loader_core::~loader_core()
-{	
+{
 }
 
 loader_state loader_core::GetCurrentState()
@@ -83,9 +83,9 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 
 	va_list arg;
 	va_start(arg, fmt);
-		
+
 	vswprintf(buf, 4096, fmt, arg);
-	
+
 	va_end(arg);
 
 	gw2al_core__log_text(level, (wchar_t*)source, buf);
@@ -93,10 +93,6 @@ void loader_core::log_text_fmt(gw2al_log_level level, const wchar_t * source, co
 
 void loader_core::innerInit()
 {
-	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
-	if(directDraw)
-		return;
-
 	if (SwitchState(LDR_ADDON_LOAD))
 	{
 		bool isFirstLoad = gw2al_core__init();
@@ -116,9 +112,7 @@ IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 
 	IDirect3D9* ret = NULL;
 
-	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
-
-	if (!directDraw && d3d9_create_hook)
+	if (d3d9_create_hook)
 	{
 		LOG_DEBUG(L"core", L"Calling D3D9Create, hook = 0x%016llX", d3d9_create_hook);
 		ret = d3d9_create_hook();
@@ -136,7 +130,7 @@ IDirect3D9* loader_core::RouteD3DCreate(UINT sdkVer)
 		typedef IDirect3D9* (WINAPI* Direct3DCreate9Func)(UINT sdkver);
 
 		Direct3DCreate9Func origDirect3DCreate9 = (Direct3DCreate9Func)GetProcAddress(sys_d3d9, "Direct3DCreate9");
-		ret = origDirect3DCreate9(sdkVer);		
+		ret = origDirect3DCreate9(sdkVer);
 	}
 
 	LOG_DEBUG(L"core", L"ID3D9 = 0x%016llX", ret);
@@ -155,9 +149,7 @@ HRESULT loader_core::RouteDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, v
 
 	HRESULT ret = NULL;
 
-	HMODULE directDraw = GetModuleHandleA("ddraw.dll");
-
-	if (!directDraw && dxgi_create_hook)
+	if (dxgi_create_hook)
 	{
 		LOG_DEBUG(L"core", L"Calling DXGICreate, hook = 0x%016llX", dxgi_create_hook);
 		ret = dxgi_create_hook(ver, Flags, riid, ppFactory);
@@ -202,7 +194,7 @@ HRESULT loader_core::OnDXGIFactoryCreate(UINT ver, UINT Flags, REFIID riid, void
 
 
 IDirect3D9 * loader_core::OnD3DCreate(UINT sdkVer)
-{	
+{
 	innerInit();
 	return RouteD3DCreate(sdkVer);
 }
@@ -285,7 +277,7 @@ void loader_core::SignalUnload()
 }
 
 BOOL loader_core::SwitchState(loader_state newState)
-{	
+{
 	int doSwitch = 0;
 
 	switch (state)

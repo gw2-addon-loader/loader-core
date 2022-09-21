@@ -1,9 +1,10 @@
 ﻿#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-using Compat_t = void*(WINAPI *)();
-Compat_t RealCompatValue = nullptr;
-Compat_t RealCompatString = nullptr;
+using CompatValue_t = BOOL(WINAPI *)(LPCSTR szName, UINT64 *pValue);
+using CompatString_t = BOOL(WINAPI *)(LPCSTR szName, ULONG *pSize, LPSTR lpData, bool Flag);
+CompatValue_t RealCompatValue = nullptr;
+CompatString_t RealCompatString = nullptr;
 
 typedef HRESULT(WINAPI* DXGIFactoryCreate0)(REFIID riid, void** ppFactory);
 typedef HRESULT(WINAPI* DXGIFactoryCreate1)(REFIID riid, void** ppFactory);
@@ -53,7 +54,19 @@ HMODULE GetDXGIModule()
     GetSystemDirectory(infoBuf, 4096);
     lstrcatW(infoBuf, L"\\dxgi.dll");
 
+    auto existingModule = GetModuleHandle(infoBuf);
+    if(existingModule)
+        return existingModule;
+
     return LoadLibrary(infoBuf);
+}
+
+void FreeDXGIModule() {
+    wchar_t infoBuf[4096];
+    GetSystemDirectory(infoBuf, 4096);
+    lstrcatW(infoBuf, L"\\dxgi.dll");
+
+    FreeLibrary(GetModuleHandle(infoBuf));
 }
 
 FARPROC GetDXGIFunction(LPCSTR name)
@@ -64,14 +77,28 @@ FARPROC GetDXGIFunction(LPCSTR name)
 
 #define GET_DXGI_FUNC(name) (decltype(name)*)GetDXGIFunction(#name)
 
-extern "C" void* WINAPI CompatValue()
+bool ShouldTryLoading = true;
+void LoadAllFunctions();
+
+extern "C" BOOL WINAPI CompatValue(LPCSTR szName, UINT64 *pValue)
 {
-    return RealCompatValue();
+    if(ShouldTryLoading)
+        LoadAllFunctions();
+    return RealCompatValue(szName, pValue);
 }
 
-extern "C" void* WINAPI CompatString()
+extern "C" BOOL WINAPI CompatString(LPCSTR szName, ULONG *pSize, LPSTR lpData, bool Flag)
 {
-    return RealCompatString();
+    if(ShouldTryLoading)
+        LoadAllFunctions();
+    return RealCompatString(szName, pSize, lpData, Flag);
+}
+
+void LoadAllFunctions() {
+    RealCompatValue = GET_DXGI_FUNC(CompatValue);
+    RealCompatString = GET_DXGI_FUNC(CompatString);
+
+    ShouldTryLoading = false;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -79,16 +106,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
                      )
 {
-    switch (fdwReason)
+    if(fdwReason == DLL_PROCESS_DETACH)
     {
-    case DLL_PROCESS_ATTACH:
-        RealCompatValue = GET_DXGI_FUNC(CompatValue);
-        RealCompatString = GET_DXGI_FUNC(CompatString);
-        break;
-    case DLL_PROCESS_DETACH:
-        RealCompatValue = nullptr;
-        RealCompatString = nullptr;
-        break;
+        ShouldTryLoading = true;
+        FreeDXGIModule();
     }
+
+    return true;
 }
 
